@@ -4,7 +4,8 @@
   "description": "API em Node.js desenvolvida durante o curso de Clean Architecture e TDD.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --watchAll",
+    "teststaged": "jest"
   },
   "standard": {
     "env": ["jest"]
