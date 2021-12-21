@@ -19,6 +19,7 @@ const makeSut = () => {
 const nakeEmailValidator = () => {
   class EmailValidatorSpy {
     isValid (email) {
+      this.email = email
       return this.isEmailValid
     }
   }
@@ -47,6 +48,15 @@ const nakeAuthUseCaseWithError = () => {
     }
   }
   return new AuthUseCaseSpy()
+}
+
+const nakeEmailValidatorWithError= () => {
+  class EmailValidatorSpy{
+   isValid(){
+      throw new Error()
+    }
+  }
+  return new EmailValidatorSpy()
 }
 
 describe('Login Router', () => {
@@ -219,5 +229,31 @@ describe('Login Router', () => {
     const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should return 500 if EmailValidator throus', async () => {
+    const authUseCaseSpy = makeAuthUseCase()
+    const emailValidatorSpy = nakeEmailValidatorWithError()
+    const sut = new LoginRouter(authUseCaseSpy, emailValidatorSpy)
+    const httpRequest = {
+      body: {
+        email: 'any_email@gmail.com',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = await sut.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should call EmailValidator with correct email', async () => {
+    const { sut, emailValidatorSpy } = makeSut()
+    const httpRequest = {
+      body: {
+        email: 'any_email@gmail.com',
+        password: 'any_password'
+      }
+    }
+    await sut.route(httpRequest)
+    expect(emailValidatorSpy.email).toBe(httpRequest.body.email)
   })
 })
