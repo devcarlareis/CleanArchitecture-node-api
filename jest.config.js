@@ -5,6 +5,7 @@ module.exports = {
 
     //coverageProvider: "v8",
 
-  testEnvironment: "node"
+  testEnvironment: "node",
+  collectCoverageFron: ['**/src/**/*.js']
 
 }
